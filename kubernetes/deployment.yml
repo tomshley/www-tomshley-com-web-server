@@ -28,7 +28,7 @@ spec:
       containers:
         - name: www-tomshley-com-web-server
           # use specific image version from docker publish
-          image: registry.gitlab.com/tomshley/brands/usa/tomshleyllc/tech/www-tomshley-com-web/www-tomshley-com-web-server:0.0.0-20-3b019e99
+          image: registry.gitlab.com/tomshley/brands/usa/tomshleyllc/tech/www-tomshley-com-web-server/www-tomshley-com-web-server:0.0.0-6-f37466d8
           imagePullPolicy: IfNotPresent
           # support for cloudflared tunnel
           args: [ "tunnel", "--no-autoupdate", "run", "--token={token}" ]

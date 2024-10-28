@@ -24,7 +24,7 @@ val web =
        */
       dockerExposedPorts := Seq(8080, 9900, 80, 443),
       dockerBaseImage := "eclipse-temurin:21-jre-jammy",
-      dockerUsername := Some("www-tomshley-com-web"),
+      dockerUsername := Some("www-tomshley-com-web-server"),
       dockerRepository := Some(
         "registry.gitlab.com/tomshley/brands/usa/tomshleyllc/tech"
       ),
