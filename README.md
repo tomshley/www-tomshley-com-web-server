@@ -67,7 +67,7 @@ echo "$DOCKER_PUSH_REGISTRY_PASS" | docker login $DOCKER_PUSH_REGISTRY --usernam
 
 Push the latest build to dock
 ```shell
-docker push registry.gitlab.com/tomshley/brands/usa/tomshleyllc/tech/www-tomshley-com-web/www-tomshley-com-web-server:latest
+docker push registry.gitlab.com/tomshley/brands/usa/tomshleyllc/tech/www-tomshley-com-web-server/www-tomshley-com-web-server:latest
 ```
 
 ### Deploy The Service
