@@ -1,0 +1,10 @@
+@import com.tomshley.www.web.viewmodels.HeroView
+@()
+@main("Tomshley - Find your happy place") {
+  @hero(HeroView("notfound", showImage = true)){
+      <h1 id="notfound-header" class="tomshley-hero-header">
+          Not Found!
+      </h1>
+  }
+
+}
