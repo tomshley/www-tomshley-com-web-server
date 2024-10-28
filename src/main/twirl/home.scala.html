@@ -1,0 +1,11 @@
+@import com.tomshley.www.web.viewmodels.HeroView
+@import com.tomshley.www.web.viewmodels.ContactFormView
+@(contactFormView: ContactFormView)
+@main("Tomshley - Find your happy place") {
+    @hero(HeroView("introduction", showImage = true)) {
+      <h1 id="introduction-header">Contact us:</h1>
+        @contactform(contactFormView)
+    }
+    @hero(HeroView("collage")) {
+    }
+}
