@@ -1,3 +1,12 @@
+### Test with IntelliJ
+```shell
+-Dfork=false
+```
+or in build.sbt:
+```scala 3
+run / fork = false
+```
+
 ### Login to Cloudflared
 ```shell
 brew install cloudflared
@@ -19,7 +28,8 @@ kubectl create secret generic tunnel-credentials \
 --from-file=credentials.json=.secure_files/.credentials.cloudflared.json -n www-tomshley-com-web-server-namespace
 ```
 ```shell
-cloudflared tunnel route dns www-tomshley-com-cloudflaredtunnel <tunnel-id>.tomshley.com
+cloudflared tunnel route dns www-tomshley-com-cloudflaredtunnel tomshley.com
+cloudflared tunnel route dns www-tomshley-com-cloudflaredtunnel www.tomshley.com
 ```
 
 ### Setup GKE
@@ -82,7 +92,10 @@ kubectl apply -f kubernetes/service.yml
 kubectl apply -f kubernetes/deployment.yml
 kubectl apply -f kubernetes/deployment-cloudflared.yml
 ```
-
+#### Update the app
+```shell
+kubectl apply -f kubernetes/deployment.yml -n=www-tomshley-com-web-server-namespace
+```
 Tail logs
 ```shell
 kubectl logs --follow -l app=www-tomshley-com-web-server --namespace=www-tomshley-com-web-server-namespace
