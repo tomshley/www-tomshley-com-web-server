@@ -38,7 +38,6 @@ object WebRouting extends WebServerRoutingBoilerplate with StaticAssetRouting {
     def tuple1 = arg.get.asInstanceOf[(Idempotency, ContactService)]
 
     Seq(
-      homeRoute,
       contactRouteGet,
       handleRejections(staticAssetRejectionHandler) {
         getStaticAssetRoute(system)
@@ -47,16 +46,10 @@ object WebRouting extends WebServerRoutingBoilerplate with StaticAssetRouting {
     )
   }
 
-  private val homeRoute = path("home") {
-    get {
-      complete(homePageResponse)
-    }
-  }
-
   private val contactRouteGet = {
-    path("contact") {
+    path("") {
       get {
-        complete(contactFormResponse(StatusCodes.OK))
+        complete(contactFormErrorResponse(StatusCodes.OK))
       }
     }
   }
@@ -64,7 +57,7 @@ object WebRouting extends WebServerRoutingBoilerplate with StaticAssetRouting {
   private def contactRoutePostIdempotent(system: ActorSystem[?],
                                          idempotency: Idempotency,
                                          wwwContactService: ContactService) =
-    path("contact") {
+    path("") {
       handleRejections(contactPostValidationRejectionHandler) {
         post {
           formFields("request-id", "name", "phone", "email", "message").as(
@@ -109,83 +102,20 @@ object WebRouting extends WebServerRoutingBoilerplate with StaticAssetRouting {
                   reject(UnknownRejection(exception.getMessage))
                 case scala.util.Failure(_) =>
                   reject(UnknownRejection("Unknown error occurred"))
-                case scala.util.Success(value) =>
-                  complete(
-                    HttpResponse(
-                      status = StatusCodes.Created,
-                      entity = HttpEntity(
-                        ContentTypes.`text/html(UTF-8)`,
-                        html.contactthanks
-                          .render(
-                            ContactFormView(
-                              messages = List(
-                                InboundContactResponse
-                                  .fromAscii(value.body.get)
-                                  .replyMessage
-                              )
-                            )
-                          )
-                          .body
-                      )
-                    )
-                  )
-              }
-            }
-          }
-        }
-      }
-    }
-
-  private def contactRoutePost(system: ActorSystem[?],
-                               idempotency: Idempotency,
-                               wwwContactService: ContactService) =
-    path("contact") {
-      handleRejections(contactPostValidationRejectionHandler) {
-        post {
-          formFields("request-id", "name", "phone", "email", "message").as(
-            ContactSubmission.apply
-          ) { (contactSubmission: ContactSubmission) =>
-            extractExecutionContext { implicit executor =>
-              onComplete {
-                implicit val timeout: Timeout = {
-                  Timeout.create(
-                    system.settings.config
-                      .getDuration(
-                        "tomshley-hexagonal-reqreply-idempotency.ask-timeout"
-                      )
-                  )
+                case scala.util.Success(responseValue) =>
+                  optionalHeaderValueByName("X-Request-With") { (headerValOption: Option[String]) =>
+                    complete(contactFormResponse(
+                      ContactFormView(
+                        messages = List(
+                          InboundContactResponse
+                            .fromAscii(responseValue.body.get)
+                            .replyMessage
+                        )
+                      ),
+                      StatusCodes.Created,
+                      headerValOption
+                    ))
                 }
-
-                wwwContactService
-                  .inboundContact(
-                    InitiateInboundContactRequest(
-                      name = contactSubmission.name,
-                      phone = contactSubmission.phone,
-                      email = contactSubmission.email,
-                      message = contactSubmission.message
-                    )
-                  )
-              } {
-                case scala.util.Failure(exception: IdempotentRequestExpired) =>
-                  reject(IdempotentRejection(exception.getMessage))
-                case scala.util.Failure(exception: Exception) =>
-                  reject(UnknownRejection(exception.getMessage))
-                case scala.util.Failure(_) =>
-                  reject(UnknownRejection("Unknown error occurred"))
-                case scala.util.Success(value) =>
-                  complete(
-                    HttpResponse(
-                      status = StatusCodes.Created,
-                      entity = HttpEntity(
-                        ContentTypes.`text/html(UTF-8)`,
-                        html.contactthanks
-                          .render(
-                            ContactFormView(messages = List(value.replyMessage))
-                          )
-                          .body
-                      )
-                    )
-                  )
               }
             }
           }

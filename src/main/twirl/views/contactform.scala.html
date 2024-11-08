@@ -1,0 +1,32 @@
+@import com.tomshley.www.web.viewmodels.ContactFormView
+@(contactFormView: ContactFormView)
+@if(contactFormView.errors.nonEmpty) {
+    <p class="tomshley-contact-form tomshley-contact-form-errors">Please fix the following:</p>
+    <ul class="tomshley-contact-form tomshley-contact-form-errors">
+    @for(error <- contactFormView.errors) {
+        <li>@error</li>
+    }
+    </ul>
+}
+@if(contactFormView.messages.nonEmpty) {
+    @for(message <- contactFormView.messages) {
+        <p class="tomshley-contact-form tomshley-contact-form-messages">@message</p>
+    }
+} else {
+    <form class="tomshley-contact-form" action="/" method="post" enctype="application/x-www-form-urlencoded">
+        <input class="tomshley-form-input" type="hidden" id="request-id" name="request-id" value="@contactFormView.requestId.toBase64Hmac"/>
+        <section>
+            <label for="tomshley-form-input-contact-name" class="tomshley-form-input-label">Name</label>
+            <input id="tomshley-form-input-contact-name" class="tomshley-form-input" type="text" name="name" required="required" placeholder="John Smith"/>
+            <label for="tomshley-form-input-contact-phone" class="tomshley-form-input-label">Phone Number</label>
+            <input id="tomshley-form-input-contact-phone" class="tomshley-form-input" type="tel" name="phone" required="required" placeholder="+1.215.555.1212"/>
+            <label for="tomshley-form-input-contact-email" class="tomshley-form-input-label">Email Address</label>
+            <input id="tomshley-form-input-contact-email" class="tomshley-form-input" type="email" name="email" required="required" placeholder="youraddress@@domain.com"/>
+        </section>
+        <section>
+            <label for="tomshley-form-input-contact-message" class="tomshley-form-input-label">Message</label>
+            <textarea id="tomshley-form-input-contact-message" class="tomshley-form-input" name="message" required="required" placeholder="Hey Tom and Ashley, can you give us a call?"></textarea>
+            <input class="tomshley-form-input" type="submit" id="tomshley-contact-submit-button" name="submit" value="Send >"/>
+        </section>
+    </form>
+}

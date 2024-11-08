@@ -18,17 +18,18 @@ spec:
     spec:
       imagePullSecrets:
         - name: registry-credentials
-      nodeSelector:
-        cloud.google.com/gke-nodepool: www-tomshley-com-pool-websvr
-      tolerations:
-        - key: "www-tomshley-com-pooltaintdedicated"
-          operator: "Equal"
-          value: "www-tomshley-com-pool-websvr-taint"
-          effect: "NoSchedule"
+      # If dedicated nodes and taints are required:
+      # nodeSelector:
+      #   cloud.google.com/gke-nodepool: www-tomshley-com-pool-websvr
+      # tolerations:
+      #   - key: "www-tomshley-com-pooltaintdedicated"
+      #     operator: "Equal"
+      #     value: "www-tomshley-com-pool-websvr-taint"
+      #     effect: "NoSchedule"
       containers:
         - name: www-tomshley-com-web-server
           # use specific image version from docker publish
-          image: registry.gitlab.com/tomshley/brands/usa/tomshleyllc/tech/www-tomshley-com-web-server/www-tomshley-com-web-server:0.0.0-6-f37466d8
+          image: registry.gitlab.com/tomshley/brands/usa/tomshleyllc/tech/www-tomshley-com-web-server/www-tomshley-com-web-server:0.0.0-20-9ef50393
           imagePullPolicy: IfNotPresent
           # support for cloudflared tunnel
           args: [ "tunnel", "--no-autoupdate", "run", "--token={token}" ]
@@ -43,37 +44,41 @@ spec:
 
           readinessProbe:
             httpGet:
-              path: /ready
+              path: "/ready"
               port: management
             periodSeconds: 10
             failureThreshold: 3
-            initialDelaySeconds: 10
+            initialDelaySeconds: 120
           livenessProbe:
             httpGet:
               path: "/alive"
               port: management
-            periodSeconds: 10
+            periodSeconds: 20
             failureThreshold: 5
-            initialDelaySeconds: 20
+            initialDelaySeconds: 30
           ports:
-            # akka-management and bootstrap
+            - name: web
+              containerPort: 8080
+              protocol: TCP
+            - name: grpc
+              containerPort: 80
+              protocol: TCP
             - name: remoting
               containerPort: 7355
               protocol: TCP
             - name: management
               containerPort: 7626
               protocol: TCP
-            - name: grpc
-              containerPort: 80
-              protocol: TCP
-            - name: web
-              containerPort: 8080
-              protocol: TCP
           env:
             - name: NAMESPACE
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.podIP
             - name: REQUIRED_CONTACT_POINT_NR
               value: "2"
             - name: JAVA_TOOL_OPTIONS
