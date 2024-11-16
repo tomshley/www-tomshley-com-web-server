@@ -1,1 +1,8 @@
-<link type="text/css" href="/static/css/tomshley.1731092897.min.css" rel="stylesheet">
+@(debugMode: Boolean = false)
+<link type="text/css"
+    @if(debugMode) {
+        href="/static/css/tomshley.css"
+    } else {
+        href="/static/css/tomshley.1731534604.min.css"
+    }
+rel="stylesheet">

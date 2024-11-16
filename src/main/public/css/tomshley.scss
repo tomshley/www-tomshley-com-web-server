@@ -65,7 +65,7 @@ table {
     position: relative;
     margin: 0 auto 0;
     overflow: hidden;
-    height: 80%;
+    height: 90%;
 }
 
 .tomshley-hero > .tomshley-hero-content,
@@ -167,6 +167,230 @@ html, body, #content {
     height: auto;
 }
 
+$bg-color: #e6e6e6;
+$button-bg: #262262;
+$button-font-color: #fff;
+$font-color: #262262;
+
+.form-field {
+    position: relative;
+    margin: 0 0 1em;
+}
+
+.form-field:last-child {
+    margin-bottom: 0;
+}
+
+//.form-field > .form-field-label {
+  //    display: none;
+  //}
+
+
+
+.form-field > label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-field > label > small {
+    color: #4d4d4d;
+    margin-top: 5px;
+    font-size: 80%;
+    display: block;
+}
+
+.form-field-select > select,
+.form-field-text > input,
+.form-field-email > input,
+.form-field-tel > input,
+.form-field-textarea > textarea {
+    color: #262262;
+    height: 49px;
+    width: 95%;
+    padding: 0 15px;
+    background: #fafafa;
+    font-size: 50%;
+    -moz-border-radius: 15px;
+    -webkit-border-radius: 15px;
+    border-radius: 15px;
+    font-family: "textalight", Arial, sans-serif;
+    border: solid 1px #2622621c;
+}
+
+.form-field-textarea > textarea {
+    width: 86%;
+}
+
+.form-field-checkbox > .form-field-label {
+    display: inline-block;
+}
+
+.no-validation-support .form-field > .form-field-label {
+    display: inline-block;
+}
+
+.form-field-input:focus + .form-field-label {
+    display: none;
+}
+
+.form-field.not-empty > .form-field-label {
+    display: none;
+}
+
+.form-field-radio > .form-field-input,
+.form-field-checkbox > .form-field-input {
+    display: inline-block;
+    width: auto;
+    margin-right: 20px;
+}
+
+.form-field-input {
+    border: 1px solid $bg-color;
+    width: 100%;
+    background-color: #fff;
+    padding: 16px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    display: block;
+    font-size: 100%;
+    -webkit-transition: border-color 0.3s ease-out;
+    -moz-transition: border-color 0.3s ease-out;
+    -o-transition: border-color 0.3s ease-out;
+    transition: border-color 0.3s ease-out;
+}
+
+.form-field-select {
+    @extend .form-field-input;
+}
+
+.form-field-input.initiated:invalid,
+.form-field-select.initiated:invalid,
+.form-field-textarea.initiated:invalid {
+    border-color: #ED1556;
+    box-shadow: none;
+    outline: 0;
+}
+
+.form-field-input:focus,
+.form-field-select:focus,
+.form-field-textarea:focus {
+    box-shadow: none;
+    outline: 0;
+    border-color: #ccc;
+}
+
+.form-field-input:active,
+.form-field-select:active,
+.form-field-textarea:active {
+    border-color: #333;
+}
+
+.no-validation-support .form-field-input:active,
+.no-validation-support .form-field-select:active,
+.no-validation-support .form-field-textarea:active {
+    border-color: transparent;
+}
+
+.form-field-checkbox > .form-field-input {
+    float: left;
+    margin-right: 15px;
+    padding: 0;
+}
+
+.form-field-checkbox > .form-field-label > strong {
+    font-family: "textabold", Arial, sans-serif;
+}
+
+.form-field.error > .form-field-label {
+    color: #ED1556;
+}
+
+.form-field.error > .form-field-input,
+.form-field.error > select,
+.form-field.error > textarea {
+    background: #FFD9D9;
+}
+
+.form-field-submit {
+    height: 1%;
+    overflow: hidden;
+}
+
+/* end generic form styles */
+
+.form-field-button-notype {
+    background-color: $button-bg;
+    font-family: textabold, Arial, sans-serif;
+    font-weight: normal;
+    font-size: 14px;
+    float: left;
+    line-height: 1;
+    padding: 15px 0;
+    width: 95%;
+    margin: 0 auto;
+    color: $button-font-color;
+    height: 50px;
+    text-align: center;
+    -webkit-border-radius: 7px;
+    border-radius: 7px;
+    text-transform: uppercase;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-box-shadow: inset -2px -2px 3px 2px rgba($font-color, 0.5);
+    box-shadow: inset -2px -2px 3px -2px rgba($font-color, 0.5);
+    border: 1px solid #dedede;
+    -webkit-transition: all 0.3s ease-out;
+    -moz-transition: all 0.3s ease-out;
+    -o-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    &:hover,
+    &:active {
+        background-color: darken($button-bg, 4%);
+    }
+
+    &:active {
+        -webkit-box-shadow: inset 2px 2px 2px 2px rgba($font-color, 0.7);
+        box-shadow: inset 2px 2px 2px -2px rgba($font-color, 0.7);
+    }
+}
+
+.form-field-button-cancel {
+    margin-right: 2%;
+}
+
+
+.error-box, .message-box {
+    padding: 20px 20px 20px 40px;
+    margin-bottom: 2em;
+    background-color: #FFD9D9;
+    border: 1px solid #ED1556;
+    list-style: disc outside none;
+
+    & > li {
+        margin-bottom: 4px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        & > b {
+            font-weight: bold;
+        }
+    }
+}
+
+.message-box {
+    background-color: #d9ffd9;
+    border: 1px solid #29ed15;
+}
+
 #contact-form-hero {
     position: relative;
     height: auto;
@@ -254,14 +478,14 @@ html, body, #content {
 }
 
 #contact-form-hero-content-wrap {
-    width: auto;
+    width: 50%;
     height: auto;
     margin: 0 auto 0;
 }
 
 #contact-form-hero-content {
     font-family: "textabold", Arial, sans-serif;
-    font-size: 1rem;
+    font-size: .5rem;
     color: #262262;
     padding: 1rem 2rem;
     max-width: 40rem;
@@ -273,7 +497,7 @@ html, body, #content {
 .tomshley-contact-form {
     margin: 0 auto;
     max-width: 45rem;
-    font-size: 4rem;
+    font-size: 2rem;
     overflow: visible;
 
 }

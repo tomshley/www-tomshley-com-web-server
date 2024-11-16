@@ -1,0 +1,25 @@
+@import com.tomshley.www.web.viewmodels.FormFieldButtonView
+@(formFieldView: FormFieldButtonView)(content: Html)
+
+<p class="form-field form-field-button
+@if(formFieldView.typeAttr.getOrElse("") != "") {
+    form-field-button-@formFieldView.typeAttr.get.toLowerCase
+} @if(formFieldView.cssClass.getOrElse("") != "") {
+    @formFieldView.cssClass.get
+}">
+    <button class="form-field-button-notype
+    @if(formFieldView.typeAttr.getOrElse("") != "") {
+        form-field-button-type-@formFieldView.typeAttr.get.toLowerCase
+    }
+    " @if(formFieldView.name.getOrElse("") != "") {
+        name="@formFieldView.name.get.toLowerCase"
+    }@if(formFieldView.typeAttr.getOrElse("") != "") {
+        type="@formFieldView.typeAttr.get.toLowerCase"
+    } value="@formFieldView.value.getOrElse("")" @if(formFieldView.id.getOrElse("") != "") {
+        id="@formFieldView.id.get"
+    } @if(formFieldView.size.isDefined) {
+        size="@formFieldView.size.get"
+        } @if(formFieldView.formmethod.getOrElse("") != "") {
+        formmethod="@formFieldView.formmethod.get"
+        }>@if(!formFieldView.hideInnerContent) { @content }</button>
+</p>
