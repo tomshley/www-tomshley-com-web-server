@@ -1,0 +1,65 @@
+@(title: String)(content: Html)
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title>Tomshley LLC</title>
+        <meta property="description"
+        content="Tomshley LLC - Find your happy place"/>
+        <meta property="keywords"
+        content="tomshley, "/>
+        <meta property="og:title" content="Tomshley"/>
+        <meta property="og:description"
+        content="Tomshley - Find your happy place"/>
+        <meta property="og:site_name" content="tomshley.com"/>
+        <meta property="og:url" content="http://www.tomshley.com"/>
+        <meta property="og:type" content="product"/>
+        <meta property="fb:admins" content=""/>
+        @includes.html.faviconincludes()
+        <meta name="msapplication-TileColor" content="#ffffff">
+        <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+        <meta name="theme-color" content="#ffffff">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+        @includes.html.cssincludes()
+        <noscript>
+            <style type="text/css">body {
+                opacity: 1 !important;
+                filter: alpha(opacity=100) !important;
+            }</style>
+        </noscript>
+        </head>
+    <body>
+
+        <style type="text/css">
+                body {
+                    margin-top: 0 !important;
+                    padding-top: 0 !important;
+                }
+        </style>
+        <header id="tomshley-header">
+            @views.html.logo()
+            @* <p id="header-get-started"><a href="/contact">Get Started</a></p>*@
+            @* <nav id="main-nav">*@
+            @* <ul id="main-nav-items">*@
+            @* <li class="main-nav-item"><a href="/overview">Overview</a></li>*@
+            @* <li class="main-nav-item"><a href="/overview">Projects</a></li>*@
+            @* <li class="main-nav-item"><a href="/overview">Community</a></li>*@
+            @* </ul>*@
+            @* </nav>*@
+        </header>
+        <main id="content">
+        @content
+        </main>
+        <footer id="main-footer">
+            <div id="legal-footer-nav">
+                <p class="copyright">
+                            &copy;&nbsp;
+                    <span id="footer-date">2024</span>
+                        &nbsp;TOMSHLEY LLC
+                </p>
+            </div>
+        </footer>
+        @includes.html.jsincludes()
+    </body>
+</html>

@@ -18,17 +18,18 @@ spec:
     spec:
       imagePullSecrets:
         - name: registry-credentials
-      nodeSelector:
-        cloud.google.com/gke-nodepool: www-tomshley-com-pool-websvr
-      tolerations:
-        - key: "www-tomshley-com-pooltaintdedicated"
-          operator: "Equal"
-          value: "www-tomshley-com-pool-websvr-taint"
-          effect: "NoSchedule"
+      # If dedicated nodes and taints are required:
+      # nodeSelector:
+      #   cloud.google.com/gke-nodepool: www-tomshley-com-pool-websvr
+      # tolerations:
+      #   - key: "www-tomshley-com-pooltaintdedicated"
+      #     operator: "Equal"
+      #     value: "www-tomshley-com-pool-websvr-taint"
+      #     effect: "NoSchedule"
       containers:
         - name: www-tomshley-com-web-server
           # use specific image version from docker publish
-          image: registry.gitlab.com/tomshley/brands/usa/tomshleyllc/tech/www-tomshley-com-web-server/www-tomshley-com-web-server:0.0.0-11-71893199
+          image: registry.gitlab.com/tomshley/brands/usa/tomshleyllc/tech/www-tomshley-com-web-server/www-tomshley-com-web-server:0.0.0-23-68425e90
           imagePullPolicy: IfNotPresent
           # support for cloudflared tunnel
           args: [ "tunnel", "--no-autoupdate", "run", "--token={token}" ]

@@ -1,0 +1,37 @@
+@import com.tomshley.www.web.viewmodels.FormFieldTextareaView
+@(formFieldView: FormFieldTextareaView)(content: Html)
+
+<p class="form-field form-field-textarea">
+    @if(formFieldView.label.getOrElse("") != "") {
+        <label
+        class="form-field-label" @if(formFieldView.id.getOrElse("") != "") {
+            for="@formFieldView.id.get"
+            } >
+            @formFieldView.label.get @if(formFieldView.required) {*} @if(formFieldView.help_link.getOrElse("") != "") {
+            [<a target="_blank" href="@formFieldView.help_link.get">?</a>]
+        }
+        </label>
+    }
+
+    @if(formFieldView.description.getOrElse("") != "") {
+        <span class="form-field-description">@formFieldView.description.get</span>
+    }
+
+<textarea @if(formFieldView.id.getOrElse("") != "") {
+    id="@formFieldView.id.get"
+} @if(formFieldView.name.getOrElse("") != "") {
+    name="@formFieldView.name.get.toLowerCase"
+} @if(formFieldView.placeholder.getOrElse("") != "") {
+    placeholder="@formFieldView.placeholder.get"
+} @if(formFieldView.required) {
+    required
+} @if(formFieldView.maxlength.isDefined) {
+    maxlength="@formFieldView.maxlength.get"
+} @if(formFieldView.label.getOrElse("") != "" || formFieldView.title.getOrElse("") != "") {
+    title="@if(formFieldView.label.getOrElse("") != "") {
+        @formFieldView.label.get
+    } else {
+        @formFieldView.title.get
+    }"
+}>@if(!formFieldView.hideInnerContent) { @content }</textarea>
+</p>

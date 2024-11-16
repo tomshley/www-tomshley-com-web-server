@@ -1,12 +1,13 @@
 package com.tomshley.www.web.models
 
+import com.tomshley.hexagonal.lib.marshalling.models.MarshallModel
 import com.tomshley.hexagonal.lib.reqreply.models.IdempotentRequestId
 
 final case class ContactSubmission(requestId: String,
                                    name: String,
                                    phone: String,
                                    email: String,
-                                   message: String) {
+                                   message: String) extends MarshallModel[ContactSubmission] {
 
   lazy val idempotentRequestId: Option[IdempotentRequestId] = {
     IdempotentRequestId.fromBase64Hmac(requestId)

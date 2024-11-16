@@ -1,30 +1,27 @@
 package com.tomshley.www.web
 
 import com.tomshley.www.web.viewmodels.ContactFormView
-import org.apache.pekko.http.scaladsl.model.{
-  ContentTypes,
-  HttpEntity,
-  HttpResponse,
-  StatusCode,
-  StatusCodes
-}
+import org.apache.pekko.http.scaladsl.model.*
 object WebPresenters {
-  def homePageResponse: HttpResponse = HttpResponse(
-    entity = HttpEntity(
-      ContentTypes.`text/html(UTF-8)`,
-      html.home.render(ContactFormView()).body
-    )
-  )
-  def contactFormResponse(statusCode: StatusCode,
-                          errors: List[String] = List.empty): HttpResponse = {
+  
+  def contactFormErrorResponse(statusCode: StatusCode,
+                               errors: List[String] = List.empty, headerValOption: Option[String] = None): HttpResponse = {
+    contactFormResponse(ContactFormView(errors = errors), statusCode, headerValOption)
+
+  }
+  
+  def contactFormResponse(contactFormView: ContactFormView, statusCode: StatusCode, headerValOption: Option[String] = None): HttpResponse = {
     HttpResponse(
       status = statusCode,
-      entity = HttpEntity(
-        ContentTypes.`text/html(UTF-8)`,
-        html.contact
-          .render(ContactFormView(errors = errors))
-          .body
-      )
+      entity = headerValOption match
+        case Some(_) => HttpEntity(
+          ContentTypes.`application/json`,
+          WebJsonMarshalling.serializeWithDefaults[ContactFormView](contactFormView)
+        )
+        case _ => HttpEntity(
+          ContentTypes.`text/html(UTF-8)`,
+          html.contactthanks.render(contactFormView).body
+        )
     )
   }
 
@@ -39,5 +36,4 @@ object WebPresenters {
       )
     )
   }
-
 }

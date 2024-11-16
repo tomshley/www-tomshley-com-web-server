@@ -1,0 +1,102 @@
+@import com.tomshley.www.web.viewmodels.FormFieldInputView
+@(formFieldView: FormFieldInputView)(content: Html)
+<p class="form-field @if(formFieldView.typeAttr.getOrElse("") != "") {
+    form-field-@formFieldView.typeAttr.get
+} @if(formFieldView.name.getOrElse("") != "") {
+    form-field-name-@formFieldView.name.get.toLowerCase
+}">
+    @if(formFieldView.label.getOrElse("") != "") {
+        <label
+        class="form-field-label"
+            @if(formFieldView.id.getOrElse("") != "") {
+                for="@formFieldView.id.get"
+                }
+        > @formFieldView.label.get @if(formFieldView.required) {*}
+            @if(formFieldView.help_link.isDefined || formFieldView.help_tooltip.isDefined) {
+                @if(formFieldView.help_link.getOrElse("") != "") {
+                    [<a target="_blank" href="@formFieldView.help_link.get">?</a>]
+                } else {
+                    @if(formFieldView.help_tooltip.isDefined) {
+                        [<span class="tooltip-trigger" data-ui-js-tooltip="@formFieldView.help_tooltip.get.`type`=@formFieldView.help_tooltip.get.display_copy">
+                            ?</span>
+                        ]
+                    }
+                }
+            }
+
+            @if(formFieldView.errors.nonEmpty) {
+                <ul class="errors">
+                @for(error <- formFieldView.errors) {
+                    <li>@error</li>
+                }
+                </ul>
+            }
+        </label>
+    }
+
+    @if(formFieldView.prefix_label.getOrElse("") != "") {
+        <span class="form-field-prefix-label">@formFieldView.prefix_label.get</span>
+    }
+
+    @if(formFieldView.description.getOrElse("") != "") {
+        <span class="form-field-description">@formFieldView.description.get</span>
+    }
+
+    @if(!formFieldView.display_hidden_input) {
+        <input
+        class="form-field-input"
+            @if(formFieldView.typeAttr.getOrElse("") != "") {
+                type="@formFieldView.typeAttr.get.toLowerCase"
+            } @if(formFieldView.typeAttr.getOrElse("").toLowerCase == "password") {
+            autocomplete="off"
+        } @if(formFieldView.placeholder.getOrElse("") != "") {
+            placeholder="@formFieldView.placeholder.get"
+        } @if(formFieldView.id.getOrElse("") != "") {
+            id="@formFieldView.id.get"
+        } @if(formFieldView.name.getOrElse("") != "") {
+            name="@formFieldView.name.get.toLowerCase"
+        } value="@formFieldView.value.getOrElse("")" @if(formFieldView.label.getOrElse("") != "" || formFieldView.title.getOrElse("") != "") {
+            title="@if(formFieldView.label.getOrElse("") != "") {
+                @formFieldView.label.get
+            } else {
+                @formFieldView.title.get
+            }"
+        } @if(formFieldView.pattern.getOrElse("") != "") {
+            pattern="@formFieldView.pattern.get"
+        } @if(formFieldView.size.isDefined) {
+            size="@formFieldView.size.get"
+    } @if(formFieldView.required) {
+            required
+        } @if(formFieldView.disabled) {
+            disabled
+        } @if(formFieldView.maxlength.isDefined) {
+            maxlength="@formFieldView.maxlength.get"
+        } @if(formFieldView.checked) {
+            checked
+        } @if(formFieldView.min.isDefined) {
+            min="@formFieldView.min.get"
+        } @if(formFieldView.max.isDefined) {
+            max="@formFieldView.max.get"
+        } @if(formFieldView.error_data.nonEmpty) {
+            @for((key, value) <- formFieldView.error_data) {
+                data-@key="@value"
+            }
+        } @if(formFieldView.data_attrs.nonEmpty) {
+            @for((key, value) <- formFieldView.data_attrs) {
+                @key="@value"
+            }
+        } />
+    } else {
+        <span class="form-field-hidden-input">
+            <input type="hidden" @if(formFieldView.id.getOrElse("") != "") {
+                id="@formFieldView.id.get"
+            } @if(formFieldView.name.getOrElse("") != "") {
+                name="@formFieldView.name.get.toLowerCase"
+            } value="@formFieldView.value.getOrElse("")">
+        </span>
+    }
+    @if(!formFieldView.hideInnerContent) { @content }
+</p>
+
+
+

@@ -1,0 +1,69 @@
+@import com.tomshley.www.web.viewmodels.FormFieldTextareaView
+@import com.tomshley.www.web.viewmodels.FormFieldButtonView
+@import com.tomshley.www.web.viewmodels.FormFieldInputView
+@import com.tomshley.www.web.viewmodels.FormFieldHiddenPassthroughsView
+@import com.tomshley.www.web.viewmodels.ContactFormView
+@(contactFormView: ContactFormView)
+@if(contactFormView.errors.nonEmpty) {
+    <p class="tomshley-contact-form tomshley-contact-form-errors">Please fix the following:</p>
+    <ul class="tomshley-contact-form tomshley-contact-form-errors">
+    @for(error <- contactFormView.errors) {
+        <li>@error</li>
+    }
+    </ul>
+}
+@if(contactFormView.messages.nonEmpty) {
+    @for(message <- contactFormView.messages) {
+        <p class="tomshley-contact-form tomshley-contact-form-messages">@message</p>
+    }
+} else {
+    <form class="tomshley-contact-form" action="/" method="post" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+        @views.html.formfieldhiddenpassthroughs(
+            FormFieldHiddenPassthroughsView(
+                Map("request-id" -> contactFormView.requestId.toBase64Hmac)
+            )
+        )
+        <section>
+            @views.html.formfieldinput(FormFieldInputView(
+                inputName = "name",
+                required = true,
+                label = Some("Name"),
+                placeholder = Some("John Smith"),
+                maxlength = Some(50),
+                hideInnerContent = true
+            )) { }
+            @views.html.formfieldinput(FormFieldInputView(
+                inputName = "phone",
+                inputType = "tel",
+                required = true,
+                label = Some("Phone Number"),
+                placeholder = Some("+1.215.555.1212"),
+                maxlength = Some(15),
+                hideInnerContent = true
+            )) { }
+            @views.html.formfieldinput(FormFieldInputView(
+                inputName = "email",
+                inputType = "email",
+                required = true,
+                label = Some("Email Address"),
+                placeholder = Some("youraddress@domain.com"),
+                hideInnerContent = true
+            )) { }
+        </section>
+        <section>
+            @views.html.formfieldtextarea(FormFieldTextareaView(
+                textareaName = "message",
+                required = true,
+                label = Some("Message"),
+                placeholder = Some("Hey Tom and Ashley, can you give us a call?"),
+                maxlength = Some(500),
+                hideInnerContent = true
+            )) { }
+            @views.html.formfieldbutton(FormFieldButtonView(
+                isSubmit = true,
+                name = Some("submit"),
+                formmethod = Some("post")
+            )) { Send }
+        </section>
+    </form>
+}

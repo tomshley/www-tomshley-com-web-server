@@ -1,0 +1,8 @@
+@import com.tomshley.www.web.viewmodels.FormFieldHiddenPassthroughsView
+@(formFieldView: FormFieldHiddenPassthroughsView)
+
+@for((key, value) <- formFieldView.passthrough_dict) {
+    @if(formFieldView.passthrough_dict_except.getOrElse("") != key) {
+        <input type="hidden" name="@key" value="@value">
+    }
+}

@@ -89,7 +89,9 @@ data:
     # E.g. `cloudflared tunnel route dns www-tomshley-com-cloudflaredtunnel tunnel.example.com`.
     ingress:
       # The first rule proxies traffic to the Service defined
-      - hostname: 50804370-b295-454b-aee6-dc355258483d.tomshley.com
+      - hostname: www.tomshley.com
+        service: http://www-tomshley-com-web-server-k8service.www-tomshley-com-web-server-namespace:80
+      - hostname: tomshley.com
         service: http://www-tomshley-com-web-server-k8service.www-tomshley-com-web-server-namespace:80
       # This rule sends traffic to the built-in hello-world HTTP server. This can help debug connectivity
       # issues. If hello.example.com resolves and tunnel.example.com does not, then the problem is
