@@ -1,3 +1,7 @@
+@import com.tomshley.www.web.viewmodels.FormFieldTextareaView
+@import com.tomshley.www.web.viewmodels.FormFieldButtonView
+@import com.tomshley.www.web.viewmodels.FormFieldInputView
+@import com.tomshley.www.web.viewmodels.FormFieldHiddenPassthroughsView
 @import com.tomshley.www.web.viewmodels.ContactFormView
 @(contactFormView: ContactFormView)
 @if(contactFormView.errors.nonEmpty) {
@@ -13,20 +17,53 @@
         <p class="tomshley-contact-form tomshley-contact-form-messages">@message</p>
     }
 } else {
-    <form class="tomshley-contact-form" action="/" method="post" enctype="application/x-www-form-urlencoded">
-        <input class="tomshley-form-input" type="hidden" id="request-id" name="request-id" value="@contactFormView.requestId.toBase64Hmac"/>
+    <form class="tomshley-contact-form" action="/" method="post" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+        @views.html.formfieldhiddenpassthroughs(
+            FormFieldHiddenPassthroughsView(
+                Map("request-id" -> contactFormView.requestId.toBase64Hmac)
+            )
+        )
         <section>
-            <label for="tomshley-form-input-contact-name" class="tomshley-form-input-label">Name</label>
-            <input id="tomshley-form-input-contact-name" class="tomshley-form-input" type="text" name="name" required="required" placeholder="John Smith"/>
-            <label for="tomshley-form-input-contact-phone" class="tomshley-form-input-label">Phone Number</label>
-            <input id="tomshley-form-input-contact-phone" class="tomshley-form-input" type="tel" name="phone" required="required" placeholder="+1.215.555.1212"/>
-            <label for="tomshley-form-input-contact-email" class="tomshley-form-input-label">Email Address</label>
-            <input id="tomshley-form-input-contact-email" class="tomshley-form-input" type="email" name="email" required="required" placeholder="youraddress@@domain.com"/>
+            @views.html.formfieldinput(FormFieldInputView(
+                inputName = "name",
+                required = true,
+                label = Some("Name"),
+                placeholder = Some("John Smith"),
+                maxlength = Some(50),
+                hideInnerContent = true
+            )) { }
+            @views.html.formfieldinput(FormFieldInputView(
+                inputName = "phone",
+                inputType = "tel",
+                required = true,
+                label = Some("Phone Number"),
+                placeholder = Some("+1.215.555.1212"),
+                maxlength = Some(15),
+                hideInnerContent = true
+            )) { }
+            @views.html.formfieldinput(FormFieldInputView(
+                inputName = "email",
+                inputType = "email",
+                required = true,
+                label = Some("Email Address"),
+                placeholder = Some("youraddress@domain.com"),
+                hideInnerContent = true
+            )) { }
         </section>
         <section>
-            <label for="tomshley-form-input-contact-message" class="tomshley-form-input-label">Message</label>
-            <textarea id="tomshley-form-input-contact-message" class="tomshley-form-input" name="message" required="required" placeholder="Hey Tom and Ashley, can you give us a call?"></textarea>
-            <input class="tomshley-form-input" type="submit" id="tomshley-contact-submit-button" name="submit" value="Send >"/>
+            @views.html.formfieldtextarea(FormFieldTextareaView(
+                textareaName = "message",
+                required = true,
+                label = Some("Message"),
+                placeholder = Some("Hey Tom and Ashley, can you give us a call?"),
+                maxlength = Some(500),
+                hideInnerContent = true
+            )) { }
+            @views.html.formfieldbutton(FormFieldButtonView(
+                isSubmit = true,
+                name = Some("submit"),
+                formmethod = Some("post")
+            )) { Send }
         </section>
     </form>
 }
