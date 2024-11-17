@@ -40,6 +40,6 @@ val web =
         ),
         "hexagonal-lib"
       ),
-      "com.tomshley.hexagonal" % "hexagonal-lib_3" % "0.0.17"
+      "com.tomshley.hexagonal" % "hexagonal-lib_3" % "0.0.18"
     )
     .settings(protoPackageRegistrySettings *)
