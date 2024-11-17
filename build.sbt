@@ -8,7 +8,7 @@ lazy val protoPackageRegistrySettings = Seq(
 
 val web =
   publishableProject("www-tomshley-com-web-server", Some(file(".")))
-    .enablePlugins(EdgeProjectPlugin, SrirachaPlugin, ForkJVMRunConfigPlugin)
+    .enablePlugins(EdgeProjectPlugin, SrirachaPlugin, ForkJVMRunConfigPlugin, VersionFilePlugin)
     .sourceDependency(
       ProjectRef(file("../www-tomshley-com-proto"), "www-tomshley-com-proto"),
       "com.tomshley.www" % "www-tomshley-com-proto_3" % "0.0.1"
