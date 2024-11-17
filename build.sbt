@@ -11,7 +11,7 @@ val web =
     .enablePlugins(EdgeProjectPlugin, SrirachaPlugin, ForkJVMRunConfigPlugin, VersionFilePlugin)
     .sourceDependency(
       ProjectRef(file("../www-tomshley-com-proto"), "www-tomshley-com-proto"),
-      "com.tomshley.www" % "www-tomshley-com-proto_3" % "0.0.1"
+      "com.tomshley.www" % "www-tomshley-com-proto_3" % "0.0.2"
     )
     .settings(
       resolvers += "Tomshley Hexagonal Registry" at
