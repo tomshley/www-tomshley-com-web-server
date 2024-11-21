@@ -32,13 +32,6 @@ cloudflared tunnel route dns www-tomshley-com-cloudflaredtunnel tomshley.com
 cloudflared tunnel route dns www-tomshley-com-cloudflaredtunnel www.tomshley.com
 ```
 
-### Setup GKE
-```shell
-gcloud auth login
-```
-```shell
-gcloud container clusters get-credentials www-tomshley-com-cluster-1 --region us-east4 --project www-tomshley-com-20241010
-```
 ### Setup Cluster Registry Auth
 ```shell
 source ./.secure_files/.tfstate.env
@@ -46,27 +39,6 @@ source ./.secure_files/.tfstate.env
 ```shell
 export K8S_DOCKER_CONFIG_AUTH=$(echo "{ \"auths\": { \"https://$K8S_DOCKER_REGISTRY\":{ \"auth\":\"$(printf "$K8S_DOCKER_REGISTRY_USER:$K8S_DOCKER_REGISTRY_PASS" | openssl base64 -A)\" } }}")
 export K8S_DOCKER_CONFIG_AUTH_BASE64=$(echo "$K8S_DOCKER_CONFIG_AUTH" | base64)
-```
-
-### Local Dev - Setup Minikube
-```shell
-minikube delete
-minikube start                                                                                               
-minikube addons enable ingress
-minikube addons enable metrics-server
-
-eval $(minikube -p minikube docker-env)
-
-export KUBECONFIG=~/.kube/config
-kubectl config set-context docker-desktop
-```
-
-### K8s Dashboard User
-```shell
-kubectl config set-context --current --namespace=kubernetes-dashboard
-kubectl apply -f kubernetes/dashboard-user.yml
-kubectl apply -f kubernetes/dashboard-binding.yml
-kubectl -n kubernetes-dashboard create token admin-user | pbcopy 
 ```
 
 To Auth With Docker to Push
