@@ -1,7 +1,9 @@
 @import com.tomshley.www.web.viewmodels.FormFieldTextareaView
 @(formFieldView: FormFieldTextareaView)(content: Html)
 
-<p class="form-field form-field-textarea">
+<div class="form-field form-field-textarea @if(formFieldView.errors.nonEmpty) {
+    error
+}">
     @if(formFieldView.label.getOrElse("") != "") {
         <label
         class="form-field-label" @if(formFieldView.id.getOrElse("") != "") {
@@ -9,6 +11,13 @@
             } >
             @formFieldView.label.get @if(formFieldView.required) {*} @if(formFieldView.help_link.getOrElse("") != "") {
             [<a target="_blank" href="@formFieldView.help_link.get">?</a>]
+        }
+        @if(formFieldView.errors.nonEmpty) {
+            <ul class="errors">
+            @for(error <- formFieldView.errors) {
+                <li>@error</li>
+            }
+            </ul>
         }
         </label>
     }
@@ -33,5 +42,5 @@
     } else {
         @formFieldView.title.get
     }"
-}>@if(!formFieldView.hideInnerContent) { @content }</textarea>
-</p>
+}>@if(!formFieldView.hideInnerContent) {@content}</textarea>
+</div>

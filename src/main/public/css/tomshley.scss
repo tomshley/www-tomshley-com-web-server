@@ -305,6 +305,9 @@ $font-color: #262262;
 .form-field.error > .form-field-label {
     color: #ED1556;
 }
+.form-field.error > .form-field-label > .errors {
+    font-size: 1.2rem;
+}
 
 .form-field.error > .form-field-input,
 .form-field.error > select,

@@ -1,25 +1,26 @@
 package com.tomshley.www.web.models
 
 import com.tomshley.hexagonal.lib.marshalling.models.MarshallModel
-import com.tomshley.hexagonal.lib.reqreply.models.IdempotentRequestId
 
-final case class ContactSubmission(requestId: String,
-                                   name: String,
-                                   phone: String,
-                                   email: String,
-                                   message: String) extends MarshallModel[ContactSubmission] {
+case class ContactSubmission(
+                                    requestId: String,
+                                    name: String,
+                                    phone: String,
+                                    email: String,
+                                    message: String
+                                  ) extends MarshallModel[ContactSubmission] with IdempotentContact {
 
-  lazy val idempotentRequestId: Option[IdempotentRequestId] = {
-    IdempotentRequestId.fromBase64Hmac(requestId)
+  override val validFields: Seq[String] = IdempotentContactFieldNames.validFields
+}
+
+object ContactSubmission {
+  def apply(formFields: Map[String, String]): IdempotentContact = {
+    new ContactSubmission(
+      formFields.getOrElse(IdempotentContactFieldNames.requestId, ""),
+      formFields.getOrElse(IdempotentContactFieldNames.name, ""),
+      formFields.getOrElse(IdempotentContactFieldNames.phone, ""),
+      formFields.getOrElse(IdempotentContactFieldNames.email, ""),
+      formFields.getOrElse(IdempotentContactFieldNames.message, "")
+    )
   }
-
-  require(
-    requestId.nonEmpty && idempotentRequestId.nonEmpty,
-    "Request id must be present. Please reload the page."
-  )
-  require(name.nonEmpty, "Name is required")
-  require(phone.nonEmpty, "Phone number is required")
-  require(email.nonEmpty, "Email address is required")
-  require(message.nonEmpty, "Message is required")
-
 }
