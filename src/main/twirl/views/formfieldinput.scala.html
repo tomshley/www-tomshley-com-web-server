@@ -1,9 +1,11 @@
 @import com.tomshley.www.web.viewmodels.FormFieldInputView
 @(formFieldView: FormFieldInputView)(content: Html)
-<p class="form-field @if(formFieldView.typeAttr.getOrElse("") != "") {
+<div class="form-field @if(formFieldView.typeAttr.getOrElse("") != "") {
     form-field-@formFieldView.typeAttr.get
 } @if(formFieldView.name.getOrElse("") != "") {
     form-field-name-@formFieldView.name.get.toLowerCase
+} @if(formFieldView.errors.nonEmpty) {
+    error
 }">
     @if(formFieldView.label.getOrElse("") != "") {
         <label
@@ -96,7 +98,7 @@
         </span>
     }
     @if(!formFieldView.hideInnerContent) { @content }
-</p>
+</div>
 
 
 

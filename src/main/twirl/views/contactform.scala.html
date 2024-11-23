@@ -20,9 +20,8 @@
     <form class="tomshley-contact-form" action="/" method="post" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
         @views.html.formfieldhiddenpassthroughs(
             FormFieldHiddenPassthroughsView(
-                Map("request-id" -> contactFormView.requestId.toBase64Hmac)
-            )
-        )
+                Map("request-id" -> (if (contactFormView.formSubmission.isDefined && contactFormView.formSubmission.get.requestId != "") contactFormView.formSubmission.get.requestId else contactFormView.requestId.toBase64Hmac))
+        ))
         <section>
             @views.html.formfieldinput(FormFieldInputView(
                 inputName = "name",
@@ -30,7 +29,9 @@
                 label = Some("Name"),
                 placeholder = Some("John Smith"),
                 maxlength = Some(50),
-                hideInnerContent = true
+                hideInnerContent = true,
+                value = (if (contactFormView.formSubmission.isDefined) Some(contactFormView.formSubmission.get.name) else None),
+                errors = contactFormView.fieldErrors.getOrElse("name", List.empty[String])
             )) { }
             @views.html.formfieldinput(FormFieldInputView(
                 inputName = "phone",
@@ -39,7 +40,9 @@
                 label = Some("Phone Number"),
                 placeholder = Some("+1.215.555.1212"),
                 maxlength = Some(15),
-                hideInnerContent = true
+                hideInnerContent = true,
+                value = (if (contactFormView.formSubmission.isDefined) Some(contactFormView.formSubmission.get.phone) else None),
+                errors = contactFormView.fieldErrors.getOrElse("phone", List.empty[String])
             )) { }
             @views.html.formfieldinput(FormFieldInputView(
                 inputName = "email",
@@ -47,18 +50,21 @@
                 required = true,
                 label = Some("Email Address"),
                 placeholder = Some("youraddress@domain.com"),
-                hideInnerContent = true
+                hideInnerContent = true,
+                value = (if (contactFormView.formSubmission.isDefined) Some(contactFormView.formSubmission.get.email) else None),
+                errors = contactFormView.fieldErrors.getOrElse("email", List.empty[String])
             )) { }
-        </section>
-        <section>
             @views.html.formfieldtextarea(FormFieldTextareaView(
                 textareaName = "message",
                 required = true,
                 label = Some("Message"),
                 placeholder = Some("Hey Tom and Ashley, can you give us a call?"),
                 maxlength = Some(500),
-                hideInnerContent = true
-            )) { }
+                hideInnerContent = contactFormView.formSubmission.isEmpty || (contactFormView.formSubmission.isDefined && contactFormView.formSubmission.get.message == ""),
+                errors = contactFormView.fieldErrors.getOrElse("message", List.empty[String])
+            )) {@if(contactFormView.formSubmission.isDefined) {@contactFormView.formSubmission.get.message}}
+        </section>
+        <section>
             @views.html.formfieldbutton(FormFieldButtonView(
                 isSubmit = true,
                 name = Some("submit"),
