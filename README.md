@@ -32,6 +32,11 @@ cloudflared tunnel route dns www-tomshley-com-cloudflaredtunnel tomshley.com
 cloudflared tunnel route dns www-tomshley-com-cloudflaredtunnel www.tomshley.com
 ```
 
+### Build SASS
+```shell
+sass -w src/main/public/css/tomshley.scss:src/main/public/css/tomshley.1732333698.min.css
+```
+
 ### Setup Cluster Registry Auth
 ```shell
 source ./.secure_files/.tfstate.env

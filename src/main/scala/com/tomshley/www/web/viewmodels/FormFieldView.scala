@@ -84,7 +84,8 @@ case class FormFieldTextareaView(
                                   override val required: Boolean = false,
                                   override val maxlength: Option[Int] = None,
                                   override val title: Option[String] = None,
-                                  override val description: Option[String] = None
+                                  override val description: Option[String] = None,
+                                  override val errors: List[String] = List.empty[String]
                                 ) extends FormFieldView {
   override val name: Option[String] = Some(textareaName)
 }
