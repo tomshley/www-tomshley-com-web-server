@@ -10,7 +10,15 @@ object WebPresenters {
                                formSubmission:Option[IdempotentContact] = None, 
                                fieldErrors:Map[String, List[String]] = Map.empty, 
                                headerValOption: Option[String] = None): HttpResponse = {
-    contactFormResponse(ContactFormView(formSubmission = formSubmission, errors = errors, fieldErrors = fieldErrors), statusCode, headerValOption)
+    contactFormResponse(
+      ContactFormView(
+        formSubmission = formSubmission,
+        errors = errors,
+        fieldErrors = fieldErrors
+      ),
+      statusCode,
+      headerValOption
+    )
   }
   
   def contactFormResponse(contactFormView: ContactFormView, statusCode: StatusCode, headerValOption: Option[String] = None): HttpResponse = {

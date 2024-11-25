@@ -1,10 +1,7 @@
 package com.tomshley.www.web
 
-import com.tomshley.hexagonal.lib.http2.extraction.formfield.exceptions.FormFieldException
-import com.tomshley.hexagonal.lib.http2.extraction.formfield.exceptions.models.FormFieldExceptionSerializableEnvelope
-import com.tomshley.hexagonal.lib.http2.extraction.formfield.models.NamedValidation
-import com.tomshley.hexagonal.lib.marshalling.JsonMarshaller
-import com.tomshley.hexagonal.lib.reqreply.exceptions.ReqReplyRejection
+import com.tomshley.hexagonal.lib.reqreply.exceptions.{ExpiredExpiringValueRejection, ReqReplyRejection}
+import com.tomshley.hexagonal.lib.reqreply.forms.ErrorEnvelope
 import com.tomshley.hexagonal.lib.staticassets.exceptions.StaticAssetRoutingRejection
 import com.tomshley.www.web.models.{ContactSubmission, IdempotentContact}
 import org.apache.pekko.http.scaladsl.model.*
@@ -16,7 +13,7 @@ object WebRejectionHandlers {
 
   import com.tomshley.www.web.WebPresenters.*
 
-  implicit def globalRejectionHandler: RejectionHandler =
+  given globalRejectionHandler: RejectionHandler =
     RejectionHandler
       .newBuilder()
       .handleNotFound {
@@ -29,7 +26,7 @@ object WebRejectionHandlers {
   def staticAssetRejectionHandler: RejectionHandler = {
     RejectionHandler
       .newBuilder()
-      .handleAll[StaticAssetRoutingRejection] { validationRejections =>
+      .handleAll[StaticAssetRoutingRejection] { _ =>
         complete {
           notFoundResponse()
         }
@@ -45,66 +42,64 @@ object WebRejectionHandlers {
         optionalHeaderValueByName("X-Request-With") { (headerValOption: Option[String]) =>
           formFieldMap { (formFields: Map[String, String]) =>
             val contactSubmission = ContactSubmission(formFields)
-            val fieldNamesMessages: Map[String, List[String]] = validationRejections
-              .filter(
-                _.cause match
-                  case Some(FormFieldException(_, _)) =>
-                    true
-                  case _ =>
-                    false
-              )
-              .map((rejection) =>
-                try {
-                  Some(JsonMarshaller.deserializeWithDefaults[FormFieldExceptionSerializableEnvelope](rejection.message))
-                } catch {
-                  case _ => {
-                    Option.empty[FormFieldExceptionSerializableEnvelope]
-                  }
-                }
-              )
-              .filter(errorValidationMaybe => {
-                errorValidationMaybe.isDefined
-              }).flatMap(errorValidationMaybe => {
-                errorValidationMaybe.get.errors
-              })
-              .filter(formFieldErrorValidation => {
-                contactSubmission.validFields.contains(formFieldErrorValidation.fieldName)
-              })
-              .foldLeft(Map.empty[String, List[String]]) { case (errorMap: Map[String, List[String]], formFieldErrorValidation: NamedValidation) =>
-                errorMap + (formFieldErrorValidation.fieldName -> (errorMap.getOrElse(formFieldErrorValidation.fieldName, List.empty[String]) :+ formFieldErrorValidation.message))
-              }
-
-            val nonFieldErrors = validationRejections
-              .filter(
-                _.cause match
-                    case Some(FormFieldException(_, _)) => false
-                    case _ => true
-                )
-              .map(rejection => rejection.message).toList
+            val errorEnvelope = ErrorEnvelope[IdempotentContact](contactSubmission, validationRejections)
 
             complete {
               contactFormErrorResponse(
                 StatusCodes.BadRequest,
                 formSubmission = Some(contactSubmission),
-                errors = nonFieldErrors,
-                fieldErrors = fieldNamesMessages,
+                errors = errorEnvelope.nonFieldErrors,
+                fieldErrors = errorEnvelope.fieldErrors,
                 headerValOption = headerValOption
               )
             }
           }
         }
       }
+      .handleAll[ExpiredExpiringValueRejection] { _ =>
+          formFieldMap { (formFields: Map[String, String]) =>
+            val contactSubmission = ContactSubmission(formFields)
+            contactSubmission.expiringFormFieldRedirectPathMaybe match
+              case Some(expiringFormFieldRedirectPathMaybe) =>
+                expiringFormFieldRedirectPathMaybe.value match
+                  case Some(redirectPath) =>
+                    redirect(redirectPath, StatusCodes.SeeOther)
+                  case None =>
+                    complete(notFoundResponse())
+              case None =>
+                complete(notFoundResponse())
+          }
+      }
       .handleAll[ReqReplyRejection] { reqReplyRejections =>
         optionalHeaderValueByName("X-Request-With") { (headerValOption: Option[String]) =>
-          complete {
-            contactFormErrorResponse(
-              StatusCodes.BadRequest,
-              errors = reqReplyRejections.map(_.message).toList,
-              headerValOption = headerValOption
-            )
+          formFieldMap { (formFields: Map[String, String]) =>
+            val contactSubmission = ContactSubmission(formFields)
+            complete {
+              contactFormErrorResponse(
+                StatusCodes.BadRequest,
+                formSubmission = Some(contactSubmission),
+                errors = reqReplyRejections.map(_.message).toList,
+                headerValOption = headerValOption
+              )
+            }
+          }
+        }
+      }
+  }
+      .handleAll[Rejection] { reqReplyRejections =>
+        optionalHeaderValueByName("X-Request-With") { (headerValOption: Option[String]) =>
+          formFieldMap { (formFields: Map[String, String]) =>
+            val contactSubmission = ContactSubmission(formFields)
+            complete {
+              contactFormErrorResponse(
+                StatusCodes.BadRequest,
+                formSubmission = Some(contactSubmission),
+                errors = reqReplyRejections.map(_.toString).toList,
+                headerValOption = headerValOption
+              )
+            }
           }
         }
       }
       .result()
   }
-}

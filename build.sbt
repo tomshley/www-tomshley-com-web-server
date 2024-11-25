@@ -34,7 +34,7 @@ val web =
         ),
         "hexagonal-lib"
       ),
-      "com.tomshley.hexagonal" % "hexagonal-lib_3" % "0.0.21"
+      "com.tomshley.hexagonal" % "hexagonal-lib_3" % "0.0.22"
     )
     .settings(
       resolvers += "Tomshley Hexagonal Registry" at
