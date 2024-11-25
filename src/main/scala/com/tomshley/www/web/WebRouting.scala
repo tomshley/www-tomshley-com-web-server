@@ -1,11 +1,10 @@
 package com.tomshley.www.web
 
 import com.tomshley.hexagonal.lib.http2.WebServerRoutingBoilerplate
-import com.tomshley.hexagonal.lib.reqreply.Idempotency
-import com.tomshley.hexagonal.lib.reqreply.exceptions.{IdempotentRejection, UnknownRejection}
-import com.tomshley.hexagonal.lib.reqreply.models.IdempotentRequestId.IdempotentRequestExpired
+import com.tomshley.hexagonal.lib.reqreply.{ExpiringValueDirectives, Idempotency, IdempotencyDirectives, Idempotent}
 import com.tomshley.hexagonal.lib.staticassets.StaticAssetRouting
 import com.tomshley.www.contact.proto.{ContactService, InboundContactResponse, InitiateInboundContactRequest}
+import com.tomshley.www.web.WebRejectionHandlers.globalRejectionHandler
 import com.tomshley.www.web.models.{ContactSubmission, IdempotentContact, IdempotentContactFieldNames, ValidatedContactSubmission}
 import com.tomshley.www.web.viewmodels.ContactFormView
 import org.apache.pekko.actor
@@ -14,39 +13,14 @@ import org.apache.pekko.http.scaladsl.model.*
 import org.apache.pekko.http.scaladsl.model.StatusCodes.*
 import org.apache.pekko.http.scaladsl.server.*
 import org.apache.pekko.http.scaladsl.server.Directives.*
-import org.apache.pekko.http.scaladsl.server.directives.BasicDirectives.extract
 import org.apache.pekko.util.Timeout
-import org.slf4j.{Logger, LoggerFactory}
 
 import scala.concurrent.Future
-import scala.jdk.CollectionConverters.*
-import scala.util.{Failure, Success}
 
-object WebRouting extends WebServerRoutingBoilerplate with StaticAssetRouting {
+object WebRouting extends WebServerRoutingBoilerplate with StaticAssetRouting with IdempotencyDirectives {
 
   import WebPresenters.*
   import WebRejectionHandlers.*
-
-  def apply(system: ActorSystem[?],
-            wwwContactService: ContactService): Seq[Route] = {
-    val logger: Logger = LoggerFactory.getLogger(getClass)
-    routes[(Idempotency, ContactService)](
-      system,
-      Some((Idempotency(system), wwwContactService))
-    )
-  }
-
-  override def routes[A](system: ActorSystem[?], arg: Option[A]): Seq[Route] = {
-    def tuple1 = arg.get.asInstanceOf[(Idempotency, ContactService)]
-
-    Seq(
-      contactRouteGet,
-      handleRejections(staticAssetRejectionHandler) {
-        getStaticAssetRoute(system)
-      },
-      contactRoutePostIdempotent(system, tuple1._1, tuple1._2)
-    )
-  }
 
   private val contactRouteGet = {
     path("") {
@@ -56,81 +30,30 @@ object WebRouting extends WebServerRoutingBoilerplate with StaticAssetRouting {
     }
   }
 
-  private def contactRoutePostIdempotent(system: ActorSystem[?],
-                                         idempotency: Idempotency,
-                                         wwwContactService: ContactService) =
-    path("") {
-      handleRejections(contactPostValidationRejectionHandler) {
-        post {
-          formFields(
-            IdempotentContactFieldNames.requestId,
-            IdempotentContactFieldNames.name,
-            IdempotentContactFieldNames.phone,
-            IdempotentContactFieldNames.email,
-            IdempotentContactFieldNames.message,
-          ).as(fields =>
-            ValidatedContactSubmission(
-              ContactSubmission(
-                fields._1,
-                fields._2,
-                fields._3,
-                fields._4,
-                fields._5
-              )
-            )
-          ) { (contactSubmission: IdempotentContact) =>
-            extractExecutionContext { implicit executor =>
-              onComplete {
-                implicit val timeout: Timeout = {
-                  Timeout.create(
-                    system.settings.config
-                      .getDuration(
-                        "tomshley-hexagonal-reqreply-idempotency.ask-timeout"
-                      )
-                  )
-                }
-
-                idempotency.reqReply(
-                  requestId = contactSubmission.idempotentRequestId.get,
-                  responseBodyCallback = {
-                    wwwContactService
-                      .inboundContact(
-                        InitiateInboundContactRequest(
-                          name = contactSubmission.name,
-                          phone = contactSubmission.phone,
-                          email = contactSubmission.email,
-                          message = contactSubmission.message
-                        )
-                      )
-                      .map((inboundContactResponse: InboundContactResponse) => {
-                        Idempotency
-                          .RequestReply(
-                            Option.empty,
-                            Some(inboundContactResponse.toProtoString)
-                          )
-                      })
-                  }
-                )
-              } {
-                case scala.util.Failure(exception: IdempotentRequestExpired) =>
-                  reject(IdempotentRejection(exception.getMessage))
-                case scala.util.Failure(exception: Exception) =>
-                  reject(UnknownRejection(exception.getMessage))
-                case scala.util.Failure(_) =>
-                  reject(UnknownRejection("Unknown error occurred"))
-                case scala.util.Success(responseValue) =>
-                  optionalHeaderValueByName("X-Request-With") { (headerValOption: Option[String]) =>
-                    complete(contactFormResponse(
-                      ContactFormView(
-                        messages = List(
-                          InboundContactResponse
-                            .fromAscii(responseValue.body.get)
-                            .replyMessage
-                        )
-                      ),
-                      StatusCodes.Created,
-                      headerValOption
-                    ))
+  private def contactRoutePostIdempotent(system: ActorSystem[?], idempotency: Idempotency, wwwContactService: ContactService) = path("contact" / ExpiringValueDirectives.pathMatcher) { matched =>
+    get {
+      ExpiringValueDirectives.expiringValue(matched) { validatedExpiringRequestId =>
+        optionalHeaderValueByName("X-Request-With") { (headerValOption: Option[String]) =>
+          getRequestId(idempotency, validatedExpiringRequestId) { (summary: Idempotent.Summary) =>
+            complete(WebPresenters.contactFormResponse(ContactFormView(messages = List(InboundContactResponse.fromAscii(summary.replyBody.get).replyMessage)), StatusCodes.OK, headerValOption))
+          }
+        }
+      }
+    } ~ post {
+      ExpiringValueDirectives.expiringValue(matched) { validatedExpiringRequestId =>
+        formFields(IdempotentContactFieldNames.requestIdFieldName, IdempotentContactFieldNames.successPathFieldName, IdempotentContactFieldNames.redirectPathFieldName, IdempotentContactFieldNames.nameFieldName, IdempotentContactFieldNames.phoneFieldName, IdempotentContactFieldNames.emailFieldName, IdempotentContactFieldNames.messageFieldName).as(fields => ValidatedContactSubmission(ContactSubmission(fields._1, fields._2, fields._3, fields._4, fields._5, fields._6, fields._7))) { (contactSubmission: IdempotentContact) =>
+          extractExecutionContext { implicit executor =>
+            implicit val timeout: Timeout = {
+              Timeout.create(system.settings.config.getDuration("tomshley-hexagonal-reqreply-idempotency.ask-timeout"))
+            }
+            idempotentRequestReply(idempotency, validatedExpiringRequestId, {
+              wwwContactService.inboundContact(InitiateInboundContactRequest(name = contactSubmission.name, phone = contactSubmission.phone, email = contactSubmission.email, message = contactSubmission.message)).map((inboundContactResponse: InboundContactResponse) => {
+                Idempotency.RequestReply(Option.empty, Some(inboundContactResponse.toProtoString))
+              })
+            }) { (_: Idempotency.RequestReply) =>
+              optionalHeaderValueByName("X-Request-With") { (_: Option[String]) =>
+                ExpiringValueDirectives.expiringValue(contactSubmission.successPathHmacString) { expiringSuccessPath =>
+                  redirect(expiringSuccessPath.value.getOrElse(""), StatusCodes.SeeOther)
                 }
               }
             }
@@ -138,4 +61,30 @@ object WebRouting extends WebServerRoutingBoilerplate with StaticAssetRouting {
         }
       }
     }
+  }
+
+  def apply(system: ActorSystem[?], wwwContactService: ContactService): Seq[Route] = {
+    routes[(Idempotency, ContactService)](system, Some((Idempotency(system), wwwContactService)))
+  }
+
+
+  override def routes[A](system: ActorSystem[?], arg: Option[A]): Seq[Route] = {
+    val typedArgs = arg.get.asInstanceOf[(Idempotency, ContactService)]
+
+    Seq(
+      handleRejections(staticAssetRejectionHandler) {
+        getStaticAssetRoute(system)
+      },
+      handleRejections(contactPostValidationRejectionHandler) {
+        contactRoutePostIdempotent(
+          system,
+          typedArgs._1,
+          typedArgs._2
+        )
+      },
+      handleRejections(globalRejectionHandler) {
+        contactRouteGet
+      }
+    )
+  }
 }

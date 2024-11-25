@@ -1,20 +1,22 @@
 package com.tomshley.www.web.models
 
-import com.tomshley.hexagonal.lib.http2.extraction.formfield.models.FormFieldNames
+import com.tomshley.hexagonal.lib.reqreply.forms.models.ValidFormFieldNames
+import com.tomshley.hexagonal.lib.reqreply.models.{IdempotentFormFieldNames, RedirectPathFormFieldNames, ExpiringSuccessPathFormFieldNames}
 
-trait IdempotentContactFieldNames extends FormFieldNames {
-  final val requestId = "request-id"
-  final val name = "name"
-  final val phone = "phone"
-  final val email = "email"
-  final val message = "message"
+trait IdempotentContactFieldNames extends ValidFormFieldNames with IdempotentFormFieldNames with ExpiringSuccessPathFormFieldNames with RedirectPathFormFieldNames {
+  final val nameFieldName = "name"
+  final val phoneFieldName = "phone"
+  final val emailFieldName = "email"
+  final val messageFieldName = "message"
 
-  final val validFields = Seq(
-    requestId,
-    name,
-    phone,
-    email,
-    message
+  override def validFields: Seq[String] = super.validFields ++ Seq(
+    requestIdFieldName,
+    successPathFieldName,
+    redirectPathFieldName,
+    nameFieldName,
+    phoneFieldName,
+    emailFieldName,
+    messageFieldName
   )
 }
 

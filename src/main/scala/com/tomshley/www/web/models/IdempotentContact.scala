@@ -1,24 +1,22 @@
 package com.tomshley.www.web.models
 
-import com.tomshley.hexagonal.lib.http2.extraction.formfield.models.FormFieldNames
-import com.tomshley.hexagonal.lib.reqreply.models.IdempotentRequestId
+import com.tomshley.hexagonal.lib.reqreply.forms.models.ValidFormFieldNames
+import com.tomshley.hexagonal.lib.reqreply.models.{IdempotentFormField, RedirectPathFormField, ExpiringSuccessPathFormField}
 
-trait IdempotentContact extends FormFieldNames {
-  val requestId: String
+trait IdempotentContact extends IdempotentContactFieldNames with IdempotentFormField with ExpiringSuccessPathFormField with RedirectPathFormField{
   val name: String
   val phone: String
   val email: String
   val message: String
 
   def toMap: Map[String, String] = Map(
-    IdempotentContactFieldNames.requestId -> requestId,
-    IdempotentContactFieldNames.name -> name,
-    IdempotentContactFieldNames.phone -> phone,
-    IdempotentContactFieldNames.email -> email,
-    IdempotentContactFieldNames.message -> message
+    IdempotentContactFieldNames.requestIdFieldName -> requestIdHmacString,
+    IdempotentContactFieldNames.successPathFieldName -> successPathHmacString,
+    IdempotentContactFieldNames.redirectPathFieldName -> redirectPathFormFieldHmacString,
+    IdempotentContactFieldNames.nameFieldName -> name,
+    IdempotentContactFieldNames.phoneFieldName -> phone,
+    IdempotentContactFieldNames.emailFieldName -> email,
+    IdempotentContactFieldNames.messageFieldName -> message
   )
 
-  lazy val idempotentRequestId: Option[IdempotentRequestId] = {
-    IdempotentRequestId.fromBase64Hmac(requestId)
-  }
 }
