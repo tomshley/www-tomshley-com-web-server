@@ -1,6 +1,6 @@
 package com.tomshley.www.web
 
-import com.tomshley.hexagonal.lib.ManagedClusterService
+import com.tomshley.hexagonal.lib.ManagedPekkoClusterMain
 import com.tomshley.hexagonal.lib.http2.WebServerBoilerplate
 import com.tomshley.hexagonal.lib.reqreply.Idempotent
 import com.tomshley.www.contact.proto.{ContactService, ContactServiceClient}
@@ -10,7 +10,7 @@ import org.apache.pekko.grpc.GrpcClientSettings
 
 
 @main def main(): Unit =
-  ManagedClusterService("www-tomshley-com-web-server", (system: ActorSystem[?]) => {
+  ManagedPekkoClusterMain("www-tomshley-com-web-server", (system: ActorSystem[?]) => {
     Idempotent.init(system)
 
     WebServerBoilerplate.start(
