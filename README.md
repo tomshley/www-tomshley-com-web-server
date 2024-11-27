@@ -34,7 +34,7 @@ cloudflared tunnel route dns www-tomshley-com-cloudflaredtunnel www.tomshley.com
 
 ### Build SASS
 ```shell
-sass -w src/main/public/css/tomshley.scss:src/main/public/css/tomshley.1732333698.min.css
+sass -w --no-source-map src/main/public/css/tomshley.scss:"src/main/public/css/tomshley.$(date +%s).min.css"
 ```
 
 ### Setup Cluster Registry Auth
