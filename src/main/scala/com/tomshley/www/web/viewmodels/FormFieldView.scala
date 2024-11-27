@@ -16,6 +16,7 @@ sealed trait FormFieldView {
   val id: Option[String] = None
   val description: Option[String] = None
   val size: Option[Int] = None
+  val minlength: Option[Int] = None
   val maxlength: Option[Int] = None
   val help_link: Option[String] = None
   val help_tooltip: Option[HelpToolTipView] = None
@@ -41,6 +42,7 @@ case class FormFieldInputView(inputName: String,
                               override val placeholder: Option[String] = None,
                               override val id: Option[String] = None,
                               override val required: Boolean = false,
+                              override val minlength: Option[Int] = None,
                               override val maxlength: Option[Int] = None,
                               override val checked: Boolean = false,
                               override val help_link: Option[String] = None,
@@ -68,7 +70,6 @@ case class FormFieldButtonView(
                                 override val name: Option[String] = None,
                                 override val value: Option[String] = None,
                                 override val formmethod: Option[String] = None,
-
                                 override val size: Option[Int] = None,
                                 override val id: Option[String] = None,
                                 override val cssClass: Option[String] = None) extends FormFieldView {
@@ -82,10 +83,13 @@ case class FormFieldTextareaView(
                                   override val placeholder: Option[String] = None,
                                   override val id: Option[String] = None,
                                   override val required: Boolean = false,
+                                  override val minlength: Option[Int] = None,
                                   override val maxlength: Option[Int] = None,
                                   override val title: Option[String] = None,
                                   override val description: Option[String] = None,
-                                  override val errors: List[String] = List.empty[String]
+                                  override val errors: List[String] = List.empty[String],
+                                  override val error_data: Map[String, String] = Map.empty[String, String],
+                                  override val data_attrs: Map[String, String] = Map.empty[String, String]
                                 ) extends FormFieldView {
   override val name: Option[String] = Some(textareaName)
 }
