@@ -20,7 +20,7 @@
         <meta http-equiv = "refresh" content = "10; url = @contactFormView.expiringRedirectPath.value" />
     }
 } else {
-    <form class="tomshley-contact-form" action="@contactFormView.postPathPrefix@contactFormView.requestIdHmac" method="post" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    <form class="tomshley-contact-form paste-ui-form" action="@contactFormView.postPathPrefix@contactFormView.requestIdHmac" method="post" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
         @views.html.formfieldhiddenpassthroughs(
             FormFieldHiddenPassthroughsView(
                 Map(
@@ -32,9 +32,10 @@
         <section>
             @views.html.formfieldinput(FormFieldInputView(
                 inputName = "name",
-                required = true,
                 label = Some("Name"),
                 placeholder = Some("John Smith"),
+                required = true,
+                minlength = Some(3),
                 maxlength = Some(50),
                 hideInnerContent = true,
                 value = if (contactFormView.formSubmission.isDefined) Some(contactFormView.formSubmission.get.name) else None,
@@ -43,10 +44,12 @@
             @views.html.formfieldinput(FormFieldInputView(
                 inputName = "phone",
                 inputType = "tel",
-                required = true,
                 label = Some("Phone Number"),
                 placeholder = Some("+1.215.555.1212"),
+                required = true,
+                minlength = Some(10),
                 maxlength = Some(15),
+                pattern = Some("""(\+\d{1,2}\s?)?\(?\d{3}\)?[\s\.\-]?\d{3}[\s\.\-]?\d{4}"""),
                 hideInnerContent = true,
                 value = if (contactFormView.formSubmission.isDefined) Some(contactFormView.formSubmission.get.phone) else None,
                 errors = contactFormView.fieldErrors.getOrElse("phone", List.empty[String])
@@ -54,18 +57,21 @@
             @views.html.formfieldinput(FormFieldInputView(
                 inputName = "email",
                 inputType = "email",
-                required = true,
                 label = Some("Email Address"),
+                required = true,
                 placeholder = Some("youraddress@domain.com"),
+                minlength = Some(4),
                 hideInnerContent = true,
                 value = if (contactFormView.formSubmission.isDefined) Some(contactFormView.formSubmission.get.email) else None,
-                errors = contactFormView.fieldErrors.getOrElse("email", List.empty[String])
+                errors = contactFormView.fieldErrors.getOrElse("email", List.empty[String]),
+//                data_attrs = Map("data-validity-invalid"->false.toString)
             )) { }
             @views.html.formfieldtextarea(FormFieldTextareaView(
                 textareaName = "message",
-                required = true,
                 label = Some("Message"),
                 placeholder = Some("Hey Tom and Ashley, can you give us a call?"),
+                required = true,
+                minlength = Some(5),
                 maxlength = Some(500),
                 hideInnerContent = contactFormView.formSubmission.isEmpty || (contactFormView.formSubmission.isDefined && contactFormView.formSubmission.get.message == ""),
                 errors = contactFormView.fieldErrors.getOrElse("message", List.empty[String])

@@ -1,15 +1,15 @@
 @import com.tomshley.www.web.viewmodels.FormFieldInputView
 @(formFieldView: FormFieldInputView)(content: Html)
-<div class="form-field @if(formFieldView.typeAttr.getOrElse("") != "") {
-    form-field-@formFieldView.typeAttr.get
+<div class="paste-ui-form-field @if(formFieldView.typeAttr.getOrElse("") != "") {
+    paste-ui-form-field-@formFieldView.typeAttr.get
 } @if(formFieldView.name.getOrElse("") != "") {
-    form-field-name-@formFieldView.name.get.toLowerCase
+    paste-ui-form-field-name-@formFieldView.name.get.toLowerCase
 } @if(formFieldView.errors.nonEmpty) {
     error
 }">
     @if(formFieldView.label.getOrElse("") != "") {
         <label
-        class="form-field-label"
+        class="paste-ui-form-field-label"
             @if(formFieldView.id.getOrElse("") != "") {
                 for="@formFieldView.id.get"
                 }
@@ -37,16 +37,16 @@
     }
 
     @if(formFieldView.prefix_label.getOrElse("") != "") {
-        <span class="form-field-prefix-label">@formFieldView.prefix_label.get</span>
+        <span class="paste-ui-form-field-prefix-label">@formFieldView.prefix_label.get</span>
     }
 
     @if(formFieldView.description.getOrElse("") != "") {
-        <span class="form-field-description">@formFieldView.description.get</span>
+        <span class="paste-ui-form-field-description">@formFieldView.description.get</span>
     }
 
     @if(!formFieldView.display_hidden_input) {
         <input
-        class="form-field-input"
+        class="paste-ui-form-field-input"
             @if(formFieldView.typeAttr.getOrElse("") != "") {
                 type="@formFieldView.typeAttr.get.toLowerCase"
             } @if(formFieldView.typeAttr.getOrElse("").toLowerCase == "password") {
@@ -71,6 +71,8 @@
             required
         } @if(formFieldView.disabled) {
             disabled
+        } @if(formFieldView.minlength.isDefined) {
+            minlength="@formFieldView.minlength.get"
         } @if(formFieldView.maxlength.isDefined) {
             maxlength="@formFieldView.maxlength.get"
         } @if(formFieldView.checked) {
@@ -89,7 +91,7 @@
             }
         } />
     } else {
-        <span class="form-field-hidden-input">
+        <span class="paste-ui-form-field-hidden-input">
             <input type="hidden" @if(formFieldView.id.getOrElse("") != "") {
                 id="@formFieldView.id.get"
             } @if(formFieldView.name.getOrElse("") != "") {

@@ -1,15 +1,15 @@
 @import com.tomshley.www.web.viewmodels.FormFieldButtonView
 @(formFieldView: FormFieldButtonView)(content: Html)
 
-<p class="form-field form-field-button
+<p class="paste-ui-form-field paste-ui-form-field-button
 @if(formFieldView.typeAttr.getOrElse("") != "") {
-    form-field-button-@formFieldView.typeAttr.get.toLowerCase
+    paste-ui-form-field-button-@formFieldView.typeAttr.get.toLowerCase
 } @if(formFieldView.cssClass.getOrElse("") != "") {
     @formFieldView.cssClass.get
 }">
-    <button class="form-field-button-notype
+    <button class="paste-ui-form-field-button-notype
     @if(formFieldView.typeAttr.getOrElse("") != "") {
-        form-field-button-type-@formFieldView.typeAttr.get.toLowerCase
+        paste-ui-form-field-button-type-@formFieldView.typeAttr.get.toLowerCase
     }
     " @if(formFieldView.name.getOrElse("") != "") {
         name="@formFieldView.name.get.toLowerCase"
