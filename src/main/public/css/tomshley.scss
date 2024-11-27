@@ -303,8 +303,8 @@ $font-color: #262262;
 }
 
 .paste-ui-form .paste-ui-form-field > .paste-ui-form-field-input:user-invalid,
-.paste-ui-form .paste-ui-form-field > .paste-ui-form-field-input > select:user-invalid,
-.paste-ui-form .paste-ui-form-field > .paste-ui-form-field-input > textarea:user-invalid {
+.paste-ui-form .paste-ui-form-field > .paste-ui-form-field-select > select:user-invalid,
+.paste-ui-form .paste-ui-form-field-textarea > textarea:user-invalid {
     background: rgba(243, 127, 137, .3);
     color: #201f4b;
 }
