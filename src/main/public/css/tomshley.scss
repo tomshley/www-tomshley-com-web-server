@@ -172,38 +172,32 @@ $button-bg: #262262;
 $button-font-color: #fff;
 $font-color: #262262;
 
-.form-field {
+.paste-ui-form-field {
     position: relative;
     margin: 0 0 1em;
 }
 
-.form-field:last-child {
+.paste-ui-form-field:last-child {
     margin-bottom: 0;
 }
 
-//.form-field > .form-field-label {
-  //    display: none;
-  //}
-
-
-
-.form-field > label {
+.paste-ui-form-field > .paste-ui-form-field-label {
     display: block;
     margin-bottom: 5px;
 }
 
-.form-field > label > small {
+.paste-ui-form-field > .paste-ui-form-field-label > small {
     color: #4d4d4d;
     margin-top: 5px;
     font-size: 80%;
     display: block;
 }
 
-.form-field-select > select,
-.form-field-text > input,
-.form-field-email > input,
-.form-field-tel > input,
-.form-field-textarea > textarea {
+.paste-ui-form-field-select > select,
+.paste-ui-form-field-text > input,
+.paste-ui-form-field-email > input,
+.paste-ui-form-field-tel > input,
+.paste-ui-form-field-textarea > textarea {
     color: #262262;
     height: 49px;
     width: 95%;
@@ -217,34 +211,34 @@ $font-color: #262262;
     border: solid 1px #2622621c;
 }
 
-.form-field-textarea > textarea {
+.paste-ui-form-field-textarea > textarea {
     width: 86%;
 }
 
-.form-field-checkbox > .form-field-label {
+.paste-ui-form-field-checkbox > .paste-ui-form-field-label {
     display: inline-block;
 }
 
-.no-validation-support .form-field > .form-field-label {
+.no-validation-support .paste-ui-form-field > .paste-ui-form-field-label {
     display: inline-block;
 }
 
-.form-field-input:focus + .form-field-label {
+.paste-ui-form-field-input:focus + .paste-ui-form-field-label {
     display: none;
 }
 
-.form-field.not-empty > .form-field-label {
+.paste-ui-form-field.not-empty > .paste-ui-form-field-label {
     display: none;
 }
 
-.form-field-radio > .form-field-input,
-.form-field-checkbox > .form-field-input {
+.paste-ui-form-field-radio > .paste-ui-form-field-input,
+.paste-ui-form-field-checkbox > .paste-ui-form-field-input {
     display: inline-block;
     width: auto;
     margin-right: 20px;
 }
 
-.form-field-input {
+.paste-ui-form-field-input {
     border: 1px solid $bg-color;
     width: 100%;
     background-color: #fff;
@@ -258,71 +252,85 @@ $font-color: #262262;
     -moz-transition: border-color 0.3s ease-out;
     -o-transition: border-color 0.3s ease-out;
     transition: border-color 0.3s ease-out;
+    color: #201f4b;
 }
 
-.form-field-select {
-    @extend .form-field-input;
+.paste-ui-form-field-select {
+    @extend .paste-ui-form-field-input;
 }
 
-.form-field-input.initiated:invalid,
-.form-field-select.initiated:invalid,
-.form-field-textarea.initiated:invalid {
-    border-color: #ED1556;
-    box-shadow: none;
-    outline: 0;
-}
 
-.form-field-input:focus,
-.form-field-select:focus,
-.form-field-textarea:focus {
+.paste-ui-form-field-input:focus,
+.paste-ui-form-field-select:focus,
+.paste-ui-form-field-textarea:focus {
     box-shadow: none;
     outline: 0;
     border-color: #ccc;
 }
 
-.form-field-input:active,
-.form-field-select:active,
-.form-field-textarea:active {
+.paste-ui-form-field-input:active,
+.paste-ui-form-field-select:active,
+.paste-ui-form-field-textarea:active {
     border-color: #333;
 }
 
-.no-validation-support .form-field-input:active,
-.no-validation-support .form-field-select:active,
-.no-validation-support .form-field-textarea:active {
+.no-validation-support .paste-ui-form-field-input:active,
+.no-validation-support .paste-ui-form-field-select:active,
+.no-validation-support .paste-ui-form-field-textarea:active {
     border-color: transparent;
 }
 
-.form-field-checkbox > .form-field-input {
+.paste-ui-form-field-checkbox > .paste-ui-form-field-input {
     float: left;
     margin-right: 15px;
     padding: 0;
 }
 
-.form-field-checkbox > .form-field-label > strong {
+.paste-ui-form-field-checkbox > .paste-ui-form-field-label > strong {
     font-family: "textabold", Arial, sans-serif;
 }
 
-.form-field.error > .form-field-label {
-    color: #ED1556;
-}
-.form-field.error > .form-field-label > .errors {
+
+.paste-ui-form-field.error > .paste-ui-form-field-label > .errors {
     font-size: 1.2rem;
 }
 
-.form-field.error > .form-field-input,
-.form-field.error > select,
-.form-field.error > textarea {
-    background: #FFD9D9;
+.paste-ui-form .paste-ui-form-field.error > .paste-ui-form-field-label,
+.paste-ui-form[data-validity-valid=false] .paste-ui-form-field > .paste-ui-form-field-label:has(~ .paste-ui-form-field-input:user-invalid),
+.paste-ui-form[data-validity-valid=false] .paste-ui-form-field > .paste-ui-form-field-label:has(~ select:user-invalid),
+.paste-ui-form[data-validity-valid=false] .paste-ui-form-field > .paste-ui-form-field-label:has(~ textarea:user-invalid) {
+    color: #f37f89;
 }
 
-.form-field-submit {
-    height: 1%;
-    overflow: hidden;
+.paste-ui-form .paste-ui-form-field > .paste-ui-form-field-input:user-invalid,
+.paste-ui-form .paste-ui-form-field > .paste-ui-form-field-input > select:user-invalid,
+.paste-ui-form .paste-ui-form-field > .paste-ui-form-field-input > textarea:user-invalid {
+    background: rgba(243, 127, 137, .3);
+    color: #201f4b;
 }
 
-/* end generic form styles */
+.paste-ui-form-field.error > .paste-ui-form-field-input,
+.paste-ui-form-field.error > select,
+.paste-ui-form-field.error > textarea {
+    background: rgba(243, 127, 137, .3);
+    color:#201f4b;
+}
 
-.form-field-button-notype {
+.paste-ui-form[data-validity-valid=true] .paste-ui-form-field-button-type-submit {
+    opacity: 1;
+    cursor: pointer;
+}
+
+.paste-ui-form:not([data-validity-valid]) .paste-ui-form-field-button-type-submit,
+.paste-ui-form[data-validity-valid=false] .paste-ui-form-field-button-type-submit {
+    opacity: .3;
+    cursor: default;
+}
+
+
+    /* end generic form styles */
+
+.paste-ui-form-field-button-notype {
     background-color: $button-bg;
     font-family: textabold, Arial, sans-serif;
     font-weight: normal;
@@ -364,7 +372,7 @@ $font-color: #262262;
     }
 }
 
-.form-field-button-cancel {
+.paste-ui-form-field-button-cancel {
     margin-right: 2%;
 }
 

@@ -1,12 +1,12 @@
 @import com.tomshley.www.web.viewmodels.FormFieldTextareaView
 @(formFieldView: FormFieldTextareaView)(content: Html)
 
-<div class="form-field form-field-textarea @if(formFieldView.errors.nonEmpty) {
+<div class="paste-ui-form-field paste-ui-form-field-textarea @if(formFieldView.errors.nonEmpty) {
     error
 }">
     @if(formFieldView.label.getOrElse("") != "") {
         <label
-        class="form-field-label" @if(formFieldView.id.getOrElse("") != "") {
+        class="paste-ui-form-field-label" @if(formFieldView.id.getOrElse("") != "") {
             for="@formFieldView.id.get"
             } >
             @formFieldView.label.get @if(formFieldView.required) {*} @if(formFieldView.help_link.getOrElse("") != "") {
@@ -23,7 +23,7 @@
     }
 
     @if(formFieldView.description.getOrElse("") != "") {
-        <span class="form-field-description">@formFieldView.description.get</span>
+        <span class="paste-ui-form-field-description">@formFieldView.description.get</span>
     }
 
 <textarea @if(formFieldView.id.getOrElse("") != "") {
@@ -34,6 +34,8 @@
     placeholder="@formFieldView.placeholder.get"
 } @if(formFieldView.required) {
     required
+} @if(formFieldView.minlength.isDefined) {
+    minlength="@formFieldView.minlength.get"
 } @if(formFieldView.maxlength.isDefined) {
     maxlength="@formFieldView.maxlength.get"
 } @if(formFieldView.label.getOrElse("") != "" || formFieldView.title.getOrElse("") != "") {
@@ -42,5 +44,13 @@
     } else {
         @formFieldView.title.get
     }"
+} @if(formFieldView.error_data.nonEmpty) {
+    @for((key, value) <- formFieldView.error_data) {
+        data-@key="@value"
+    }
+} @if(formFieldView.data_attrs.nonEmpty) {
+    @for((key, value) <- formFieldView.data_attrs) {
+        @key="@value"
+    }
 }>@if(!formFieldView.hideInnerContent) {@content}</textarea>
 </div>
