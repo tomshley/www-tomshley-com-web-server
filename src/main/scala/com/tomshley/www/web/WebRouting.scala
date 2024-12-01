@@ -3,7 +3,7 @@ package com.tomshley.www.web
 import com.tomshley.hexagonal.lib.http2.WebServerRoutingBoilerplate
 import com.tomshley.hexagonal.lib.reqreply.{ExpiringValueDirectives, Idempotency, IdempotencyDirectives, Idempotent}
 import com.tomshley.hexagonal.lib.staticassets.StaticAssetRouting
-import com.tomshley.www.contact.proto.{ContactService, InboundContactResponse, InitiateInboundContactRequest}
+import com.tomshley.www.inboundcontact.proto.{InboundContactService, InboundContactResponse, InitiateInboundContactRequest}
 import com.tomshley.www.web.WebRejectionHandlers.globalRejectionHandler
 import com.tomshley.www.web.models.{ContactSubmission, IdempotentContact, IdempotentContactFieldNames, ValidatedContactSubmission}
 import com.tomshley.www.web.viewmodels.ContactFormView
@@ -30,7 +30,7 @@ object WebRouting extends WebServerRoutingBoilerplate with StaticAssetRouting wi
     }
   }
 
-  private def contactRoutePostIdempotent(system: ActorSystem[?], idempotency: Idempotency, wwwContactService: ContactService) = path("contact" / ExpiringValueDirectives.pathMatcher) { matched =>
+  private def contactRoutePostIdempotent(system: ActorSystem[?], idempotency: Idempotency, wwwContactService: InboundContactService) = path("contact" / ExpiringValueDirectives.pathMatcher) { matched =>
     get {
       ExpiringValueDirectives.expiringValue(matched) { validatedExpiringRequestId =>
         optionalHeaderValueByName("X-Request-With") { (headerValOption: Option[String]) =>
@@ -63,13 +63,13 @@ object WebRouting extends WebServerRoutingBoilerplate with StaticAssetRouting wi
     }
   }
 
-  def apply(system: ActorSystem[?], wwwContactService: ContactService): Seq[Route] = {
-    routes[(Idempotency, ContactService)](system, Some((Idempotency(system), wwwContactService)))
+  def apply(system: ActorSystem[?], wwwContactService: InboundContactService): Seq[Route] = {
+    routes[(Idempotency, InboundContactService)](system, Some((Idempotency(system), wwwContactService)))
   }
 
 
   override def routes[A](system: ActorSystem[?], arg: Option[A]): Seq[Route] = {
-    val typedArgs = arg.get.asInstanceOf[(Idempotency, ContactService)]
+    val typedArgs = arg.get.asInstanceOf[(Idempotency, InboundContactService)]
 
     Seq(
       handleRejections(staticAssetRejectionHandler) {

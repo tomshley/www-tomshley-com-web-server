@@ -29,7 +29,7 @@ spec:
       containers:
         - name: www-tomshley-com-web-server
           # use specific image version from docker publish
-          image: registry.gitlab.com/tomshley/brands/usa/tomshleyllc/tech/www-tomshley-com-web-server/www-tomshley-com-web-server:0.0.9
+          image: registry.gitlab.com/tomshley/brands/usa/tomshleyllc/tech/www-tomshley-com-web-server/www-tomshley-com-web-server:0.0.10
           imagePullPolicy: IfNotPresent
           # support for cloudflared tunnel
           args: [ "tunnel", "--no-autoupdate", "run", "--token={token}" ]
@@ -87,8 +87,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: "metadata.labels['app']"
-            - name: WWW_TOMSHLEY_COM_CONTACT_SERVICE_INTERFACE
-              value: "www-tomshley-com-contact-service-k8service.www-tomshley-com-contact-service-namespace"
-            - name: WWW_TOMSHLEY_COM_CONTACT_SERVICE_PORT
+            - name: WWW_TOMSHLEY_COM_INBOUNDCONTACT_SERVICE_INTERFACE
+              value: "www-tomshley-com-inboundcontact-service-k8service.www-tomshley-com-inboundcontact-service-namespace"
+            - name: WWW_TOMSHLEY_COM_INBOUNDCONTACT_SERVICE_PORT
               value: "80"
 
