@@ -3,7 +3,7 @@ package com.tomshley.www.web
 import com.tomshley.hexagonal.lib.ManagedPekkoClusterMain
 import com.tomshley.hexagonal.lib.http2.WebServerBoilerplate
 import com.tomshley.hexagonal.lib.reqreply.Idempotent
-import com.tomshley.www.contact.proto.{ContactService, ContactServiceClient}
+import com.tomshley.www.inboundcontact.proto.{InboundContactService, InboundContactServiceClient}
 import org.apache.pekko.actor
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.grpc.GrpcClientSettings
@@ -24,14 +24,14 @@ import org.apache.pekko.grpc.GrpcClientSettings
 
   def wwwContactServiceClient(
                                system: ActorSystem[?]
-                             ): ContactService = {
+                             ): InboundContactService = {
     val contactServiceClientSettings =
       GrpcClientSettings
         .connectToServiceAt(
           system.settings.config
-            .getString("www-tomshley-com-web-server.www-tomshley-com-contact-service-client.grpc.interface"),
-          system.settings.config.getInt("www-tomshley-com-web-server.www-tomshley-com-contact-service-client.grpc.port")
+            .getString("www-tomshley-com-web-server.www-tomshley-com-inboundcontact-service-client.grpc.interface"),
+          system.settings.config.getInt("www-tomshley-com-web-server.www-tomshley-com-inboundcontact-service-client.grpc.port")
         )(system)
         .withTls(false)
-    ContactServiceClient(contactServiceClientSettings)(system)
+    InboundContactServiceClient(contactServiceClientSettings)(system)
   }

@@ -25,7 +25,7 @@ val web =
     .enablePlugins(EdgeProjectPlugin, SrirachaPlugin, ForkJVMRunConfigPlugin, VersionFilePlugin, SecureFilesPlugin)
     .sourceDependency(
       ProjectRef(file("../www-tomshley-com-proto"), "www-tomshley-com-proto"),
-      "com.tomshley.www" % "www-tomshley-com-proto_3" % "0.0.2"
+      "com.tomshley.www" % "www-tomshley-com-proto_3" % "0.0.4"
     )
     .sourceDependency(
       ProjectRef(
